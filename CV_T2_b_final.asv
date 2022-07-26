@@ -1,0 +1,115 @@
+f=imread("C:\Users\Rufus Sam A\Downloads\Lincoln\Computer Vision\Assessments\ImgPIA.jpg");
+
+f_gray = rgb2gray(f);
+
+%%
+numGLranges = double(256);
+%%
+%Calculating co-occurance matrix
+D=1;
+kernel = [0,D; -D,D; -D,0; -D,-D];
+
+%%
+glcm = graycomatrix(f_gray, 'Offset', [0 1], 'NumLevels', 256, 'Symmetric', true);
+figure;
+subplot(3,2,1)
+imshow(glcm);
+title('0 angle offset'); 
+
+glcm = graycomatrix(f_gray, 'Offset', [-1 1], 'NumLevels', 256, 'Symmetric', true);
+subplot(3,2,2)
+imshow(glcm);
+title('45 angle offset'); 
+
+glcm = graycomatrix(f_gray, 'Offset', [-1 0], 'NumLevels', 256, 'Symmetric', true);
+subplot(3,2,3)
+imshow(glcm);
+title('90 angle offset'); 
+
+glcm = graycomatrix(f_gray, 'Offset', [-1 1], 'NumLevels', 256, 'Symmetric', true);
+subplot(3,2,4)
+imshow(glcm);
+title('135 angle offset'); 
+
+%%
+numOfDir= size(glcm, 3);
+
+%%
+
+for k=1 : numOfDir
+    glcm(:,:,k);
+end
+%%
+ 
+glcm = sum(glcm, 3);
+
+%%
+%imshow(glcm);
+%%
+ 
+rgbImage = ind2rgb(glcm, hot(numGLranges));
+subplot(3,2,6)
+imshow(rgbImage);
+title('All angles added');
+subplot(3,2,5)
+imshow(f_gray);
+title('Original image')
+
+%%
+%first order feature
+figure;
+[pix_count, GL] = imhist(glcm);
+imhist(rgbImage)
+
+%%
+stats = graycoprops(glcm)
+
+%%
+stats1 = GLCM_Features1(glcm)
+sum_average = stats1.savgh
+sum_entropy  = stats1.senth
+figure;
+features_1 = [stats.Contrast, stats.Correlation, stats.Energy, stats.Homogeneity, sum_average, sum_entropy]
+x = categorical({'Contrast','Correlation','Energy','Homogeneity', 'sum_average','sum_entropy' });
+bar(x, features_1);
+title('GLCM features');
+%%
+%Calculating GLRL
+%%
+%[GLRLMS,SI]= grayrlmatrix(f_gray,'NumLevels',5,'G',[]);
+
+%%
+[GLRLMS,SI]= grayrlmatrix(f_gray);
+%%
+
+stats = grayrlprops(GLRLMS)
+%% 
+stats_sum = sum(stats);
+
+SRE = stats_sum(1); %Short Run Emphasis
+LRE = stats_sum(2); %Long Run Emphasis
+GLN = stats_sum(3); %Gray-Level Nonuniformity
+RLN = stats_sum(4); %Run Length Nonuniformity
+RE = stats_sum(5); %Run Percentage
+
+x = categorical({'SRE','LRE','GLN','RLN', 'RE'});
+features_1 = [SRE, LRE, GLN, RLN, RE];
+bar(x,features_1);
+title('GLRL features');
+
+%%
+imfinfo("C:\Users\Rufus Sam A\Downloads\Lincoln\Computer Vision\Assessments\imgPIA.jpg")
+Gray = imread('C:\Users\Rufus Sam A\Downloads\Lincoln\Computer Vision\Assessments\imgPIA.jpg');
+Gray = rgb2gray(Gray);
+imwrite(Gray,'imagegrey.png');
+grey_info = imfinfo('imagegrey.png');
+
+%%
+Grey_BitDepth = grey_info.BitDepth
+imwrite(Gray,'C:\Users\Rufus Sam A\Downloads\Lincoln\Computer Vision\Assessments\imagegrey4.png','BitDepth', 6);
+grey4_info = imfinfo('C:\Users\Rufus Sam A\Downloads\Lincoln\Computer Vision\Assessments\imagegrey4.png');
+Grey4_BitDepth = grey4_info.BitDepth
+
+%%
+f=imread("C:\Users\Rufus Sam A\Downloads\Lincoln\Computer Vision\Assessments\imagegrey4.png");
+f_gray = im2gray(f);
